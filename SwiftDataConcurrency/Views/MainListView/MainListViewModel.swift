@@ -1,0 +1,81 @@
+//
+//  MainListViewModel.swift
+//  SwiftDataConcurrency
+//
+//  Created by Maksym Horobets on 18.07.2025.
+//
+
+import Combine
+import SwiftData
+import Foundation
+
+// This project was created in Xcode 26
+// so any declaration inherits default isolation.
+// In this case MainActor - meaning this ViewModel is implicitly @MainActor.
+@Observable
+final class MainListViewModel {
+    var isLoading: Bool = false
+    var page: Int = 0
+    @ObservationIgnored let itemsPerPage: Int = 100
+    
+    var records: [ProtectedRecord] = []
+    
+    let store: RecordStore
+    
+    @ObservationIgnored var notificationTask: Task<Void, Never>? = nil
+    
+    var cancelables: Set<AnyCancellable> = .init()
+    
+    init(container: ModelContainer) {
+        self.store = RecordStore(modelContainer: container)
+        subscribeToNotifications()
+    }
+    
+    deinit {
+        notificationTask?.cancel()
+        notificationTask = nil
+    }
+    
+    func subscribeToNotifications() {
+        notificationTask = Task.detached {
+            for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) {
+                // This will run successfully even during an insert since we are fetching off
+                // the ModelActor which is too busy inserting.
+                let context = ModelContext(self.store.modelContainer)
+                var descriptor = FetchDescriptor<Record>()
+                descriptor.fetchLimit = 100
+                let records = try? context.fetch(descriptor).compactMap { ProtectedRecord(from: $0) }
+                await MainActor.run {
+                    self.records.append(contentsOf: records ?? [])
+                }
+            }
+        }
+    }
+    
+    func addRecords(amount: Int = 1_000_000) {
+        Task.detached(priority: .userInitiated) { // Detach from MainActor.
+            var records = [ProtectedRecord]()
+            for _ in 0..<amount {
+                records.append(.init(title: UUID().uuidString, details: "Description"))
+            }
+            
+            try await self.store.insertBatch(records, saveAtEach: 100_000)
+        }
+    }
+    
+    func loadRecords() {
+        guard !isLoading else { return }
+        isLoading = true
+        Task.detached(priority: .userInitiated) {
+            let records = try? await self.store.fetch(page: self.page, amountPerPage: self.itemsPerPage)
+            // We will get stuck here for a long time if we try to fetch after a notification
+            // while trying to insert at the same time.
+            await MainActor.run {
+                self.records.append(contentsOf: records ?? [])
+                self.isLoading = false
+                self.page += 1
+            }
+        }
+    }
+    
+}

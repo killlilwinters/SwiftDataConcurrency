@@ -6,12 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct SwiftDataConcurrencyApp: App {
+    let container: ModelContainer
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainListView(viewModel: MainListViewModel(container: container))
         }
+    }
+    
+    init() {
+        let schema = Schema(Record.self)
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: false)
+        let modelContext = try! ModelContainer(for: schema, configurations: configuration)
+        
+        self.container = modelContext
     }
 }

@@ -51,6 +51,9 @@ final class MainListViewModel {
     
     func addRecords(amount: Int = 1_000_000) {
         Task.detached(priority: .userInitiated) { // Detach from MainActor.
+            // Many articles in the past suggested creating ModelActor instance directly in the detached
+            // task, but I am seeing my actor queue being "Actor queue: NSManagedObjectContext 0x6000035009a0"
+            // even though I create it in the init, which is isolated to the MainActor.
             var records = [ProtectedRecord]()
             for _ in 0..<amount {
                 records.append(.init(title: UUID().uuidString, details: "Description"))

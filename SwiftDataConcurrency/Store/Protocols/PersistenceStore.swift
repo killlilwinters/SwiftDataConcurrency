@@ -13,7 +13,7 @@ protocol PersistenceStore: ModelActor where SendableModel.Model == Model {
     associatedtype SendableModel: ProtectedModel
     
     func insert(_ item: SendableModel) throws  -> PersistentIdentifier
-    func insertBatch(_ items: [SendableModel]) throws -> Set<PersistentIdentifier>
+    func insertBatch(_ items: [SendableModel], saveAtEach: Int) throws -> Set<PersistentIdentifier>
     
     func delete(id: PersistentIdentifier) throws
     

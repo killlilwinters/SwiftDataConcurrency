@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @ModelActor
-actor RecordStore {
+actor RecordStore: PersistenceStore {
     
     @discardableResult
     func insert(_ item: ProtectedRecord) throws -> PersistentIdentifier {

@@ -18,13 +18,10 @@ final class MainListViewModel {
     var page: Int = 0
     @ObservationIgnored let itemsPerPage: Int = 100
     
+    let store: RecordStore
     var records: [ProtectedRecord] = []
     
-    let store: RecordStore
-    
     @ObservationIgnored var notificationTask: Task<Void, Never>? = nil
-    
-    var cancelables: Set<AnyCancellable> = .init()
     
     init(container: ModelContainer) {
         self.store = RecordStore(modelContainer: container)

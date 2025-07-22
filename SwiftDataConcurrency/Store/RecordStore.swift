@@ -101,5 +101,10 @@ extension RecordStore {
         
         return model
     }
+    
+    func checkQueueInfo() {
+        let actorQueueLabel = DispatchQueue.currentLabel
+        print("Actor queue:",actorQueueLabel)
+    }
 }
 

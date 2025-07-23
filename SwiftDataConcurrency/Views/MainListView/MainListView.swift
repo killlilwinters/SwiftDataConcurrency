@@ -13,12 +13,12 @@ struct MainListView: View {
     
     var body: some View {
         NavigationStack {
-                List(viewModel.records) { record in
-                    Text(record.title)
-                        .onAppear {
-                            viewModel.records.last == record ? viewModel.loadRecords() : nil
-                        }
-                }
+            List(viewModel.records) { record in
+                Text(record.title)
+                    .onAppear {
+                        viewModel.records.last == record ? viewModel.loadRecords() : nil
+                    }
+            }
             .navigationTitle("Record List")
             .toolbar { toolBarItems }
             .onAppear { viewModel.loadRecords() }

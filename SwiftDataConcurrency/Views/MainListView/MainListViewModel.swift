@@ -48,7 +48,7 @@ final class MainListViewModel {
         }
     }
     
-    func addRecords(amount: Int = 1_000_000) {
+    func addRecords(amount: Int) {
         Task.detached(priority: .userInitiated) { // Detach from MainActor.
             await self.store.checkQueueInfo()
             // Many articles in the past suggested creating ModelActor instance directly in the detached

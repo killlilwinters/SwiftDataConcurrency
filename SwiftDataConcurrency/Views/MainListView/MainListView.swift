@@ -33,8 +33,8 @@ struct MainListView: View {
     @ToolbarContentBuilder
     var toolBarItems: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Add 100 records") {
-                viewModel.addRecords()
+            Button("Add 1000 records") {
+                viewModel.addRecords(amount: 1_000)
             }
         }
     }

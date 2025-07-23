@@ -41,11 +41,16 @@ final class MainListViewModel {
                 // This will run successfully even during an insert since we are fetching off
                 // the ModelActor which is too busy inserting.
                 let context = ModelContext(self.store.modelContainer)
+                let page = await self.page
+                let itemsPerPage = self.itemsPerPage
+                
                 var descriptor = FetchDescriptor<Record>()
-                descriptor.fetchLimit = 100
+                descriptor.fetchLimit = page * itemsPerPage
+                
                 let records = try? context.fetch(descriptor).compactMap { ProtectedRecord(from: $0) }
                 await MainActor.run {
-                    self.records.append(contentsOf: records ?? [])
+                    guard let records else { return }
+                    self.records = records
                 }
             }
         }

@@ -5,7 +5,7 @@
 
 <p align="center">
   This is the sample project for the article:<br>
-  <strong><a href="placeholder-for-your-article-link.com">Taking SwiftData further with Modern Concurrency</a></strong>.
+  <strong><a href="https://medium.com/@killlilwinters/taking-swiftdata-further-modelactor-swift-concurrency-and-avoiding-mainactor-pitfalls-3692f61f2fa1">Taking SwiftData further with Modern Concurrency</a></strong>
 </p>
 
 

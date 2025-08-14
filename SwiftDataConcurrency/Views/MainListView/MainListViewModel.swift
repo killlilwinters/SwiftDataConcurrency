@@ -36,8 +36,10 @@ final class MainListViewModel {
         // NotificationCenter will run on cooperative thread pool in this case.
         // But notification are posted in the same context as where the notifications(named: ) method was called.
         notificationTask = Task.detached {
-            for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) {
+            for await notification in NotificationCenter.default.notifications(named: ModelContext.didSave) {
+                ModelContext.printChanges(for: notification)
                 print("NotificationCenter posts notifications on the " + DispatchQueue.currentLabel)
+                
                 // This will run successfully even during an insert since we are fetching off
                 // the ModelActor which is too busy inserting.
                 let context = ModelContext(self.store.modelContainer)
@@ -85,5 +87,4 @@ final class MainListViewModel {
             }
         }
     }
-    
 }

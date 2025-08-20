@@ -21,7 +21,7 @@ nonisolated struct ProtectedRecord: Equatable {
     var updatedAt: Date?
 }
 
-extension ProtectedRecord: ProtectedModel {
+nonisolated extension ProtectedRecord: ProtectedModel {
     init(from record: Record) {
         self.init(id: record.id,
                   persistentModelID: record.persistentModelID,
